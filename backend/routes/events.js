@@ -1,22 +1,17 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 const Event = require('../models/Event');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// Multer config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '../uploads/events');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, unique + path.extname(file.originalname));
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'gabriela_baskova/events',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
     },
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
@@ -37,7 +32,7 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         const { title, description, registrationUrl, date, order } = req.body;
         if (!req.file) return res.status(400).json({ message: 'Image is required' });
 
-        const imageUrl = `/uploads/events/${req.file.filename}`;
+        const imageUrl = req.file.path;
         const event = new Event({ title, description, imageUrl, registrationUrl, date: date || null, order: order || 0 });
         await event.save();
         res.status(201).json(event);
@@ -61,10 +56,7 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
         if (order !== undefined) event.order = order;
 
         if (req.file) {
-            // Remove old image
-            const oldPath = path.join(__dirname, '..', event.imageUrl);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-            event.imageUrl = `/uploads/events/${req.file.filename}`;
+            event.imageUrl = req.file.path;
         }
 
         await event.save();
@@ -80,9 +72,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const event = await Event.findById(req.params.id);
         if (!event) return res.status(404).json({ message: 'Event not found' });
-
-        const oldPath = path.join(__dirname, '..', event.imageUrl);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
 
         await event.deleteOne();
         res.json({ message: 'Event deleted' });

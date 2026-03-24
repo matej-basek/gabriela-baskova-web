@@ -1,22 +1,17 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
 const Studio = require('../models/Studio');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// Multer config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '../uploads/studios');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, unique + path.extname(file.originalname));
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'gabriela_baskova/studios',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
     },
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
@@ -47,7 +42,7 @@ router.post('/', authMiddleware, upload.single('photo'), async (req, res) => {
     try {
         const { name, order } = req.body;
         if (!name) return res.status(400).json({ message: 'Name is required' });
-        const photoUrl = req.file ? `/uploads/studios/${req.file.filename}` : '';
+        const photoUrl = req.file ? req.file.path : '';
         const studio = new Studio({ name, photoUrl, lessons: [], order: order || 0 });
         await studio.save();
         res.status(201).json(studio);
@@ -68,11 +63,7 @@ router.put('/:id', authMiddleware, upload.single('photo'), async (req, res) => {
         if (order !== undefined) studio.order = order;
 
         if (req.file) {
-            if (studio.photoUrl) {
-                const oldPath = path.join(__dirname, '..', studio.photoUrl);
-                if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-            }
-            studio.photoUrl = `/uploads/studios/${req.file.filename}`;
+            studio.photoUrl = req.file.path;
         }
 
         await studio.save();
@@ -88,10 +79,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const studio = await Studio.findById(req.params.id);
         if (!studio) return res.status(404).json({ message: 'Studio not found' });
-        if (studio.photoUrl) {
-            const oldPath = path.join(__dirname, '..', studio.photoUrl);
-            if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-        }
+
         await studio.deleteOne();
         res.json({ message: 'Studio deleted' });
     } catch (err) {
