@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="cs">
       <head>
-        <link rel="icon" href="/images/Logo GB.png" />
+        <link rel="icon" href="/images/Logo GB.avif" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -33,7 +33,7 @@ export default function RootLayout({
         <div className="animated-bg" />
         <div className="mandala-bg">
           <Image
-            src="/images/mandala-real.png"
+            src="/images/mandala-real.avif"
             alt=""
             width={1400}
             height={1400}

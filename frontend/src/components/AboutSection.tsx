@@ -299,7 +299,7 @@ export default function AboutSection() {
             }}
           >
             <Image
-              src="/images/nova_profilova.png"
+              src="/images/nova_profilova.avif"
               alt="Gabriela Bašková"
               fill
               style={{ objectFit: "contain" }}

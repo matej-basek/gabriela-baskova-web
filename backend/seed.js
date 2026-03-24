@@ -28,7 +28,7 @@ async function seed() {
         await Studio.insertMany([
             {
                 name: 'Jóga HK studio',
-                photoUrl: '/images/Jóga HK sál.jpg',
+                photoUrl: '/images/Jóga HK sál.avif',
                 order: 0,
                 lessons: [
                     {
@@ -53,7 +53,7 @@ async function seed() {
             },
             {
                 name: 'Balance Fit Studio',
-                photoUrl: '/images/BAlance fit studio.jpg',
+                photoUrl: '/images/BAlance fit studio.avif',
                 order: 1,
                 lessons: [
                     {
@@ -69,7 +69,7 @@ async function seed() {
             },
             {
                 name: 'Gočárova studio',
-                photoUrl: '/images/Gočárova studio.jpg',
+                photoUrl: '/images/Gočárova studio.avif',
                 order: 2,
                 lessons: [
                     {
@@ -96,28 +96,28 @@ async function seed() {
             {
                 title: 'Jarní jóga retreat',
                 description: 'Víkendový jógový retreat v přírodě. Spojte se s přírodou a najděte svůj vnitřní klid při intenzivním jógovém víkendu plném meditace, ásán a zdravého jídla.',
-                imageUrl: '/images/Poster 1.jpg',
+                imageUrl: '/images/Poster 1.avif',
                 registrationUrl: 'https://forms.google.com',
                 order: 0,
             },
             {
                 title: 'Workshop: Dýchání a meditace',
                 description: 'Naučte se techniky vědomého dýchání a meditace. Tento workshop je vhodný pro všechny úrovně.',
-                imageUrl: '/images/Poster 2.jpg',
+                imageUrl: '/images/Poster 2.avif',
                 registrationUrl: 'https://forms.google.com',
                 order: 1,
             },
             {
                 title: 'Letní jóga v parku',
                 description: 'Cvičení venku na čerstvém vzduchu. Přineste si podložku a dobrou náladu!',
-                imageUrl: '/images/Poster 3.jpg',
+                imageUrl: '/images/Poster 3.avif',
                 registrationUrl: 'https://forms.google.com',
                 order: 2,
             },
             {
                 title: 'Fyzio-jóga speciál',
                 description: 'Speciální lekce zaměřená na rehabilitaci a prevenci bolestí zad. Vhodná pro všechny věkové kategorie.',
-                imageUrl: '/images/Poster 4.jpg',
+                imageUrl: '/images/Poster 4.avif',
                 registrationUrl: 'https://forms.google.com',
                 order: 3,
             },

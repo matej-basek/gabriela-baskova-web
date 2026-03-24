@@ -86,7 +86,7 @@ export default function Navbar() {
               }}
             >
               <Image
-                src="/images/Logo GB.png"
+                src="/images/Logo GB.avif"
                 alt="GB Logo"
                 fill
                 style={{ objectFit: "contain" }}
