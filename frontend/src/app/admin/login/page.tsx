@@ -14,14 +14,23 @@ export default function AdminLoginPage() {
         setLoading(true);
         setError('');
         try {
-            await api.post('/api/auth/login', form);
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form),
+                credentials: 'include',
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.message || 'Chybné přihlašovací údaje');
+            }
             window.location.href = '/admin/events';
         } catch (err: unknown) {
-            const message = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-            setError(message || 'Chybné přihlašovací údaje');
+            setError((err as Error).message || 'Chybné přihlašovací údaje');
         } finally {
             setLoading(false);
         }
+
     };
 
     return (
