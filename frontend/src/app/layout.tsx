@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import "./globals.css";
+import CookieBanner from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: "Gabriela Bašková – Jóga & Fitness",
@@ -52,6 +53,7 @@ export default function RootLayout({
         <div className="orb orb-2" />
         <div className="orb orb-3" />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
