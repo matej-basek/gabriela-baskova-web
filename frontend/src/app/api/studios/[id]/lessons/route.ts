@@ -19,7 +19,7 @@ async function checkAuth(request: Request) {
 }
 
 // POST new lesson to a studio
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
 

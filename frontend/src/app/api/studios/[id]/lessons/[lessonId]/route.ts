@@ -19,7 +19,7 @@ async function checkAuth(request: Request) {
 }
 
 // PUT update lesson
-export async function PUT(request: Request, { params }: { params: { id: string, lessonId: string } }) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string, lessonId: string }> }) {
     try {
         const { id, lessonId } = await params;
 
@@ -47,7 +47,7 @@ export async function PUT(request: Request, { params }: { params: { id: string, 
 }
 
 // DELETE lesson
-export async function DELETE(request: Request, { params }: { params: { id: string, lessonId: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string, lessonId: string }> }) {
     try {
         const { id, lessonId } = await params;
 
