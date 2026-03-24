@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const eventsRoutes = require('./routes/events');
 const studiosRoutes = require('./routes/studios');
 const contactRoutes = require('./routes/contact');
+const seedRoutes = require('./routes/seed');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/studios', studiosRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/seed', seedRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
