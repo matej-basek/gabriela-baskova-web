@@ -12,7 +12,8 @@ const storage = new CloudinaryStorage({
     params: {
         folder: 'gabriela_baskova/events',
         allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'avif'],
-        transformation: [{ quality: 'auto:good', fetch_format: 'auto' }]
+        format: 'avif',
+        transformation: [{ quality: 'auto:good' }]
     },
 });
 const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
