@@ -66,6 +66,8 @@ router.put('/:id', authMiddleware, upload.single('photo'), async (req, res) => {
 
         if (req.file) {
             studio.photoUrl = req.file.path;
+        } else if (req.body.existingPhotoUrl) {
+            studio.photoUrl = req.body.existingPhotoUrl;
         }
 
         await studio.save();

@@ -45,6 +45,7 @@ export default function AdminEventsPage() {
     const [previewUrl, setPreviewUrl] = useState("");
     const [loading, setLoading] = useState(false);
     const [msg, setMsg] = useState("");
+    const [formError, setFormError] = useState("");
     const fileRef = useRef<HTMLInputElement>(null);
 
     const load = () =>
@@ -61,6 +62,7 @@ export default function AdminEventsPage() {
         setForm(emptyForm);
         setImageFile(null);
         setPreviewUrl("");
+        setFormError("");
         setShowForm(true);
     };
 
@@ -75,6 +77,7 @@ export default function AdminEventsPage() {
         });
         setImageFile(null);
         setPreviewUrl(ev.imageUrl);
+        setFormError("");
         setShowForm(true);
     };
 
@@ -89,39 +92,46 @@ export default function AdminEventsPage() {
         e.preventDefault();
         setLoading(true);
         setMsg("");
+        setFormError("");
+
+        if (!editingEvent && !imageFile) {
+            setFormError("Vyberte leták (obrázek)");
+            setLoading(false);
+            return;
+        }
+
         try {
-            let base64Image = editingEvent ? editingEvent.imageUrl : "";
+            const fd = new FormData();
+            fd.append("title", form.title);
+            fd.append("description", form.description);
+            fd.append("registrationUrl", form.registrationUrl);
+            fd.append("date", form.date);
+            fd.append("order", String(form.order));
 
             if (imageFile) {
-                base64Image = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(imageFile);
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = (error) => reject(error);
-                });
+                fd.append("image", imageFile);
+            } else if (editingEvent) {
+                fd.append("existingImageUrl", editingEvent.imageUrl);
             }
 
-            const payload = {
-                ...form,
-                imageUrl: base64Image,
-            };
-
             if (editingEvent) {
-                await api.put(`/api/events/${editingEvent._id}`, payload);
+                await api.put(`/api/events/${editingEvent._id}`, fd, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
                 setMsg("success: Akce aktualizována");
             } else {
-                if (!base64Image) {
-                    setMsg("error: Vyberte leták (obrázek)");
-                    setLoading(false);
-                    return;
-                }
-                await api.post("/api/events", payload);
+                await api.post("/api/events", fd, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
                 setMsg("success: Akce přidána");
             }
             load();
             setShowForm(false);
-        } catch {
-            setMsg("error: Chyba při ukládání");
+        } catch (err: unknown) {
+            const message =
+                (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+                "Chyba při ukládání";
+            setFormError(message);
         } finally {
             setLoading(false);
         }
@@ -539,6 +549,23 @@ export default function AdminEventsPage() {
                                         {imageFile ? imageFile.name : "Vybrat soubor"}
                                     </button>
                                 </div>
+                                {formError && (
+                                    <div
+                                        style={{
+                                            padding: "10px 14px",
+                                            borderRadius: "10px",
+                                            background: "rgba(239,68,68,0.15)",
+                                            border: "1px solid rgba(239,68,68,0.3)",
+                                            color: "#fca5a5",
+                                            fontSize: "13px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                        }}
+                                    >
+                                        <XCircle size={14} /> {formError}
+                                    </div>
+                                )}
                                 <button
                                     type="submit"
                                     className="btn-primary"

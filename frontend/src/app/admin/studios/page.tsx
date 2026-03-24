@@ -85,6 +85,7 @@ export default function AdminStudiosPage() {
   const [photoPreview, setPhotoPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [studioFormError, setStudioFormError] = useState("");
   const [lessonModal, setLessonModal] = useState<{
     studioId: string;
     lesson?: Lesson;
@@ -111,6 +112,7 @@ export default function AdminStudiosPage() {
     setStudioForm({ name: "", order: 0 });
     setPhotoFile(null);
     setPhotoPreview("");
+    setStudioFormError("");
     setShowStudioForm(true);
   };
 
@@ -119,6 +121,7 @@ export default function AdminStudiosPage() {
     setStudioForm({ name: s.name, order: s.order });
     setPhotoFile(null);
     setPhotoPreview(s.photoUrl);
+    setStudioFormError("");
     setShowStudioForm(true);
   };
 
@@ -126,35 +129,36 @@ export default function AdminStudiosPage() {
     e.preventDefault();
     setLoading(true);
     setMsg("");
+    setStudioFormError("");
     try {
-      let base64Photo = editingStudio ? editingStudio.photoUrl : "";
+      const fd = new FormData();
+      fd.append("name", studioForm.name);
+      fd.append("order", String(studioForm.order));
 
       if (photoFile) {
-        base64Photo = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(photoFile);
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = (error) => reject(error);
-        });
+        fd.append("photo", photoFile);
+      } else if (editingStudio) {
+        fd.append("existingPhotoUrl", editingStudio.photoUrl);
       }
 
-      const payload = {
-        name: studioForm.name,
-        order: studioForm.order,
-        photoUrl: base64Photo,
-      };
-
       if (editingStudio) {
-        await api.put(`/api/studios/${editingStudio._id}`, payload);
+        await api.put(`/api/studios/${editingStudio._id}`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         setMsg("success: Studio aktualizováno");
       } else {
-        await api.post("/api/studios", payload);
+        await api.post("/api/studios", fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         setMsg("success: Studio přidáno");
       }
       load();
       setShowStudioForm(false);
-    } catch {
-      setMsg("error: Chyba při ukládání");
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Chyba při ukládání";
+      setStudioFormError(message);
     } finally {
       setLoading(false);
     }
@@ -789,6 +793,23 @@ export default function AdminStudiosPage() {
                     {photoFile ? photoFile.name : "Vybrat fotku"}
                   </button>
                 </div>
+                {studioFormError && (
+                  <div
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: "10px",
+                      background: "rgba(239,68,68,0.15)",
+                      border: "1px solid rgba(239,68,68,0.3)",
+                      color: "#fca5a5",
+                      fontSize: "13px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <XCircle size={14} /> {studioFormError}
+                  </div>
+                )}
                 <button
                   type="submit"
                   className="btn-primary"

@@ -59,6 +59,8 @@ router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
 
         if (req.file) {
             event.imageUrl = req.file.path;
+        } else if (req.body.existingImageUrl) {
+            event.imageUrl = req.body.existingImageUrl;
         }
 
         await event.save();
