@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,10 +32,12 @@ export default function RootLayout({
       <body>
         <div className="animated-bg" />
         <div className="mandala-bg">
-          <img
+          <Image
             src="/images/mandala-real.png"
             alt=""
-            aria-hidden="true"
+            width={1400}
+            height={1400}
+            quality={60}
             style={{
               width: 'min(1400px, 140vmax)',
               height: 'min(1400px, 140vmax)',

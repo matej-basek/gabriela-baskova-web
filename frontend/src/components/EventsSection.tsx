@@ -23,7 +23,7 @@ export default function EventsSection() {
     api
       .get("/api/events")
       .then((r) => setEvents(r.data))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   return (
@@ -104,6 +104,7 @@ export default function EventsSection() {
                   alt={event.title}
                   fill
                   style={{ objectFit: "cover" }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 {/* Hover overlay */}
                 <motion.div

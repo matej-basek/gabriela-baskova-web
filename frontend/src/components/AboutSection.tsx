@@ -305,7 +305,7 @@ export default function AboutSection() {
               style={{ objectFit: "contain" }}
               className="profile-img"
               priority
-              unoptimized
+              sizes="(max-width: 768px) 100vw, 600px"
             />
           </div>
         </motion.div>
