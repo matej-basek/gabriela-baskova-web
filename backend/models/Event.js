@@ -5,7 +5,7 @@ const eventSchema = new mongoose.Schema({
     description: { type: String, default: '' },
     imageUrl: { type: String, required: true },
     registrationUrl: { type: String, default: '' },
-    date: { type: Date, default: null },
+    date: { type: String, default: '' },
     order: { type: Number, default: 0 },
 }, { timestamps: true });
 
