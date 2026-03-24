@@ -23,11 +23,12 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
+        // Povol requests bez originu (Postman, curl) nebo z povolených domén
+        if (!origin) return callback(null, true);
+        // Povol všechny *.onrender.com subdomény
+        if (origin.endsWith('.onrender.com')) return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
 }));
