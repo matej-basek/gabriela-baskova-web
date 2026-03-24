@@ -40,7 +40,7 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
         res.status(201).json(event);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: err.message || 'Server error' });
     }
 });
 
