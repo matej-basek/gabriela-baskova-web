@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import api from "@/lib/api";
 import {
   User,
   Phone,
@@ -12,6 +11,8 @@ import {
   XCircle,
   Send,
 } from "lucide-react";
+
+const WEB3FORMS_KEY = "da8a65d7-445e-4329-9b54-9a8945e0f6a7";
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -23,9 +24,26 @@ export default function ContactSection() {
     e.preventDefault();
     setStatus("loading");
     try {
-      await api.post("/api/contact", form);
-      setStatus("success");
-      setForm({ name: "", email: "", message: "" });
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          name: form.name,
+          email: form.email,
+          message: form.message,
+          subject: `📩 Nová zpráva z webu – ${form.name}`,
+          from_name: "Gabriela Bašková Web",
+          replyto: form.email,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus("success");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        setStatus("error");
+      }
     } catch {
       setStatus("error");
     }
