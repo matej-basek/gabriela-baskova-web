@@ -79,15 +79,18 @@ export default function CookieBanner() {
           aria-label="Souhlas s cookies"
         >
           <div
-            className="glass"
             style={{
-              borderRadius: "24px 24px 0 0",
-              padding: "28px 32px",
-              maxWidth: 700,
-              width: "100%",
-              borderBottom: "none",
-              boxShadow: "0 -8px 40px rgba(0,0,0,0.35)",
-            }}
+            borderRadius: "24px 24px 0 0",
+            padding: "28px 32px",
+            maxWidth: 700,
+            width: "100%",
+            borderBottom: "none",
+            background: "rgba(20, 8, 45, 0.97)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(155, 81, 224, 0.3)",
+            boxShadow: "0 -12px 48px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)",
+          }}
           >
             {/* Header */}
             <div
