@@ -16,6 +16,19 @@ router.get('/', async (req, res) => {
 
     try {
         const existing = await User.findOne({ username: 'GabrielaBaskova' });
+
+        // If reset=true is passed, force update the password
+        if (existing && req.query.reset === 'true') {
+            const passwordHash = await bcrypt.hash('GabrielaBaskova.1976', 12);
+            existing.passwordHash = passwordHash;
+            await existing.save();
+            return res.json({
+                message: 'Password reset successfully',
+                username: 'GabrielaBaskova',
+                password: 'GabrielaBaskova.1976',
+            });
+        }
+
         if (existing) {
             return res.json({ message: 'Admin user already exists', username: 'GabrielaBaskova' });
         }
