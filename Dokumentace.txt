@@ -1,0 +1,41 @@
+Dokumentace k webové aplikaci Gabriela Bašková
+===============================================
+
+1. Spuštění projektu
+--------------------
+Projekt se skládá ze dvou částí: Backend (Node.js) a Frontend (Next.js).
+
+Aby web správně fungoval lokálně, je potřeba spustit oba:
+a) Backend:
+   - Otevřete terminál ve složce `backend`
+   - Spusťte příkaz: `npm run dev`
+   - Ujistěte se, že v souboru `backend/.env` máte správně nastavenou databázi (MONGO_URI) a e-mail pro přijímání zpráv (GMAIL_APP_PASSWORD).
+
+b) Frontend:
+   - Otevřete druhý terminál ve složce `frontend`
+   - Spusťte příkaz: `npm run dev`
+   - Web se načte na adrese: http://localhost:3000
+
+2. Funkcionalita webu
+---------------------
+- **O mně:** Krátké přestavení Gabriely s fotkou, prokliky na sítě a odkazy k rychlému přesměrování.
+- **Nadcházející akce:** Mřížka vizuálních bloků pro speciální workshopy či retreaty, které se dynamicky načítají z databáze.
+- **Rozvrh kurzů (Studia):** Přehled lokací (např. Jóga HK, Balance Fit), včetně jednotlivých lekcí, časů, cen a detailních informací.
+- **Kontaktní formulář:** Funkční systém zpráv, který odesílá informace od návštěvníků webu přímo na e-mail přes zabudovaný GMail účet na backendu.
+
+3. Administrace (CMS)
+---------------------
+Pro úpravu textů, přidávání akcí a správu studií navštivte:
+=> http://gabrielabaskova.cz/admin/login
+
+- **Přihlášení:**
+  Zadejte do formuláře vytvořené uživatelské jméno (`GabrielaBaskova`) a odpovídající heslo(GabrielaBaskova.1976). Přihlašování je šifrováno pomocí kryptografické funkce bcrypt a bezpečně chráněno pomocí HTTP-Only JWT tokenů a cookie zásad.
+
+- **Správa akcí:**
+  Můžete tvořit, upravovat a mazat jednotlivé workshopy. Každá akce může mít svůj obalový obrázek, popis a externí registrační odkaz (např. Google Forms).
+
+- **Správa Studií a Rozvrhu:**
+  Umožňuje vytvořit fyzické studio (s fotkou) a následně do něj přidávat neomezené množství Lekcí (název lekce, dny v týdnu, cenové plány a doplňující informace pro návštěvníky).
+
+Vytvořil: Matěj Bašek
+

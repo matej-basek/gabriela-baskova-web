@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+build/
+
+# Environment variables (CRITICAL: Never commit these!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Uploaded files (don't commit user uploads)
+backend/uploads/
+frontend/public/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
