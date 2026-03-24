@@ -1,30 +1,32 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import User from '@/models/User';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'gabriela_baskova_super_secret_jwt_2024';
+const BACKEND_URL = process.env.BACKEND_URL || 'https://gb-backend-sosf.onrender.com';
 
 export async function POST(req: Request) {
     try {
-        await dbConnect();
-
         const { username, password } = await req.json();
 
-        const user = await User.findOne({ username });
-        if (!user) {
-            return NextResponse.json({ message: 'Neplatné přihlašovací údaje' }, { status: 401 });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!isMatch) {
-            return NextResponse.json({ message: 'Neplatné přihlašovací údaje' }, { status: 401 });
-        }
-
-        const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
-            expiresIn: '7d',
+        // Proxy credentials check to Express backend
+        const backendRes = await fetch(`${BACKEND_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
         });
+
+        if (!backendRes.ok) {
+            const data = await backendRes.json().catch(() => ({}));
+            return NextResponse.json(
+                { message: data.message || 'Neplatné přihlašovací údaje' },
+                { status: backendRes.status }
+            );
+        }
+
+        const data = await backendRes.json();
+
+        // Issue our OWN token for the Next.js middleware (set on gabrielabaskova.cz)
+        const token = jwt.sign({ username: data.username }, JWT_SECRET, { expiresIn: '7d' });
 
         const response = NextResponse.json({ success: true });
 
@@ -35,12 +37,12 @@ export async function POST(req: Request) {
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             path: '/',
-            maxAge: 60 * 60 * 24 * 7, // 7 days
+            maxAge: 60 * 60 * 24 * 7,
         });
 
         return response;
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login proxy error:', error);
         return NextResponse.json({ message: 'Chyba serveru' }, { status: 500 });
     }
 }
