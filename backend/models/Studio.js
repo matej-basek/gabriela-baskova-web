@@ -7,6 +7,8 @@ const lessonSchema = new mongoose.Schema({
     pricePerLesson: { type: String, default: '' },
     courseInfo: { type: String, default: '' },
     coursePrice: { type: String, default: '' },
+    dateRange: { type: String, default: '' },
+    registrationUrl: { type: String, default: '' },
     additionalInfo: { type: String, default: '' },
 });
 

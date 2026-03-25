@@ -29,12 +29,32 @@ interface Studio {
 export default function ScheduleSection() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [selected, setSelected] = useState<Studio | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .get("/api/studios")
-      .then((r) => setStudios(r.data))
-      .catch(() => { });
+    let mounted = true;
+    let timeout: NodeJS.Timeout;
+
+    const fetchStudios = () => {
+      api
+        .get("/api/studios")
+        .then((r) => {
+          if (mounted) {
+            setStudios(r.data);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mounted) timeout = setTimeout(fetchStudios, 3000);
+        });
+    };
+
+    fetchStudios();
+
+    return () => {
+      mounted = false;
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
@@ -66,7 +86,22 @@ export default function ScheduleSection() {
           <div className="gradient-line" style={{ margin: "16px auto 0" }} />
         </motion.div>
 
-        {studios.length === 0 ? (
+        {isLoading ? (
+          <div
+            style={{
+              textAlign: "center",
+              color: "rgba(255,255,255,0.7)",
+              padding: "40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            Načítání rozvrhů a studií... (po delší neaktivitě to může chvíli trvat)
+          </div>
+        ) : studios.length === 0 ? (
           <div
             style={{
               textAlign: "center",

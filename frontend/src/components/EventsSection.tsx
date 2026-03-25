@@ -18,12 +18,32 @@ interface Event {
 export default function EventsSection() {
   const [events, setEvents] = useState<Event[]>([]);
   const [selected, setSelected] = useState<Event | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    api
-      .get("/api/events")
-      .then((r) => setEvents(r.data))
-      .catch(() => { });
+    let mounted = true;
+    let timeout: NodeJS.Timeout;
+
+    const fetchEvents = () => {
+      api
+        .get("/api/events")
+        .then((r) => {
+          if (mounted) {
+            setEvents(r.data);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          if (mounted) timeout = setTimeout(fetchEvents, 3000);
+        });
+    };
+
+    fetchEvents();
+
+    return () => {
+      mounted = false;
+      clearTimeout(timeout);
+    };
   }, []);
 
   return (
@@ -56,7 +76,22 @@ export default function EventsSection() {
         </motion.div>
 
         {/* Posters grid */}
-        {events.length === 0 ? (
+        {isLoading ? (
+          <div
+            style={{
+              textAlign: "center",
+              color: "rgba(255,255,255,0.7)",
+              padding: "40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            Načítání akcí ze serveru... (po delší neaktivitě to může chvíli trvat)
+          </div>
+        ) : events.length === 0 ? (
           <div
             style={{
               textAlign: "center",

@@ -92,10 +92,6 @@ export default function AdminStudiosPage() {
   } | null>(null);
   const [lessonForm, setLessonForm] = useState(emptyLesson);
 
-  // UI state for split inputs
-  const [timeRange, setTimeRange] = useState({ start: "", end: "" });
-  const [dateRangeUI, setDateRangeUI] = useState({ start: "", end: "" });
-
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = () =>
@@ -172,33 +168,21 @@ export default function AdminStudiosPage() {
 
   const openAddLesson = (studioId: string) => {
     setLessonForm(emptyLesson);
-    setTimeRange({ start: "", end: "" });
-    setDateRangeUI({ start: "", end: "" });
     setLessonModal({ studioId });
   };
 
   const openEditLesson = (studioId: string, lesson: Lesson) => {
     setLessonForm({
       name: lesson.name,
-      day: lesson.day,
-      time: lesson.time,
-      pricePerLesson: lesson.pricePerLesson,
-      courseInfo: lesson.courseInfo,
-      coursePrice: lesson.coursePrice,
-      dateRange: lesson.dateRange,
-      additionalInfo: lesson.additionalInfo,
+      day: lesson.day || "",
+      time: lesson.time || "",
+      pricePerLesson: lesson.pricePerLesson || "",
+      courseInfo: lesson.courseInfo || "",
+      coursePrice: lesson.coursePrice || "",
+      dateRange: lesson.dateRange || "",
+      additionalInfo: lesson.additionalInfo || "",
       registrationUrl: lesson.registrationUrl || "",
     });
-
-    // Parse time: "16:00 – 17:00" -> start: 16:00, end: 17:00
-    const timeParts = (lesson.time || "").split(/[-–—]/).map((s) => s.trim());
-    setTimeRange({ start: timeParts[0] || "", end: timeParts[1] || "" });
-
-    // Parse date: "7.4. – 9.6." -> start: 7.4., end: 9.6.
-    const dateParts = (lesson.dateRange || "")
-      .split(/[-–—]/)
-      .map((s) => s.trim());
-    setDateRangeUI({ start: dateParts[0] || "", end: dateParts[1] || "" });
 
     setLessonModal({ studioId, lesson });
   };
@@ -208,20 +192,8 @@ export default function AdminStudiosPage() {
     if (!lessonModal) return;
     setLoading(true);
 
-    // Combine ranges back into strings before saving
-    const finalTime =
-      timeRange.start && timeRange.end
-        ? `${timeRange.start} – ${timeRange.end}`
-        : timeRange.start || timeRange.end;
-    const finalDate =
-      dateRangeUI.start && dateRangeUI.end
-        ? `${dateRangeUI.start} – ${dateRangeUI.end}`
-        : dateRangeUI.start || dateRangeUI.end;
-
     const finalPayload = {
       ...lessonForm,
-      time: finalTime,
-      dateRange: finalDate,
     };
 
     try {
@@ -925,52 +897,17 @@ export default function AdminStudiosPage() {
                   }
                 />
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "12px",
-                      color: "rgba(255,255,255,0.5)",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Časové rozmezí lekce
-                  </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                    }}
-                  >
-                    <input
-                      className="glass-input"
-                      style={{ fontSize: "14px", padding: "10px 14px" }}
-                      placeholder="Od (16:00)"
-                      value={timeRange.start}
-                      onChange={(e) =>
-                        setTimeRange({ ...timeRange, start: e.target.value })
-                      }
-                    />
-                    <span
-                      style={{
-                        color: "rgba(255,255,255,0.4)",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      —
-                    </span>
-                    <input
-                      className="glass-input"
-                      style={{ fontSize: "14px", padding: "10px 14px" }}
-                      placeholder="Do (17:00)"
-                      value={timeRange.end}
-                      onChange={(e) =>
-                        setTimeRange({ ...timeRange, end: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
+                <LabeledInput
+                  label="Čas lekce"
+                  placeholder="např. 16:00 - 17:00"
+                  value={lessonForm.time}
+                  onChange={(e) =>
+                    setLessonForm({
+                      ...lessonForm,
+                      time: e.currentTarget.value,
+                    })
+                  }
+                />
                 <div
                   style={{
                     height: "1px",
@@ -1015,55 +952,17 @@ export default function AdminStudiosPage() {
                   />
                 </div>
 
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: "12px",
-                      color: "rgba(255,255,255,0.5)",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Datumové rozmezí kurzu
-                  </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                    }}
-                  >
-                    <input
-                      className="glass-input"
-                      style={{ fontSize: "14px", padding: "10px 14px" }}
-                      placeholder="Od (7.4.)"
-                      value={dateRangeUI.start}
-                      onChange={(e) =>
-                        setDateRangeUI({
-                          ...dateRangeUI,
-                          start: e.target.value,
-                        })
-                      }
-                    />
-                    <span
-                      style={{
-                        color: "rgba(255,255,255,0.4)",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      —
-                    </span>
-                    <input
-                      className="glass-input"
-                      style={{ fontSize: "14px", padding: "10px 14px" }}
-                      placeholder="Do (9.6.)"
-                      value={dateRangeUI.end}
-                      onChange={(e) =>
-                        setDateRangeUI({ ...dateRangeUI, end: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
+                <LabeledInput
+                  label="Datumové rozmezí kurzu"
+                  placeholder="např. 7. 4. – 9. 6."
+                  value={lessonForm.dateRange}
+                  onChange={(e) =>
+                    setLessonForm({
+                      ...lessonForm,
+                      dateRange: e.currentTarget.value,
+                    })
+                  }
+                />
 
                 <LabeledInput
                   label="Cena celého kurzu"

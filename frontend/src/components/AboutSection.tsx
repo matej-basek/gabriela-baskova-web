@@ -144,7 +144,7 @@ export default function AboutSection() {
               marginBottom: "20px",
             }}
           >
-            Lektorka jógy, pilates & fitness
+            Lektorka jógy, pilates & fitness v Hradci Králové
           </div>
 
           <div
