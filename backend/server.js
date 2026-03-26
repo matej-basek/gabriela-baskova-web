@@ -55,7 +55,17 @@ mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
         console.log('✅ MongoDB connected');
-        app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            
+            // Keep the free Render tier awake by pinging the health endpoint every 14 minutes
+            const backendUrl = process.env.RENDER_EXTERNAL_URL || 'https://gb-backend-sosf.onrender.com';
+            setInterval(() => {
+                fetch(`${backendUrl}/api/health`)
+                    .then(res => console.log(`[${new Date().toISOString()}] Keep-alive ping successful:`, res.status))
+                    .catch(err => console.log(`[${new Date().toISOString()}] Keep-alive ping failed:`, err.message));
+            }, 14 * 60 * 1000); // 14 minutes
+        });
     })
     .catch((err) => {
         console.error('❌ MongoDB connection error:', err);
